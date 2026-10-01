@@ -8,10 +8,16 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Функция для верификации Telegram через Edge Function
 export async function authenticateWithTelegram(): Promise<any | null> {
+  console.log('🔍 authenticateWithTelegram called');
+  alert('authenticateWithTelegram called'); // Временная отладка
+  
   const tg = window.Telegram?.WebApp;
+  console.log('📱 Telegram WebApp:', tg);
+  console.log('📱 initData:', tg?.initData ? 'EXISTS' : 'MISSING');
   
   if (!tg?.initData) {
     console.log('📱 Not in Telegram, using demo mode');
+    alert('Not in Telegram - using demo mode');
     return null;
   }
 
