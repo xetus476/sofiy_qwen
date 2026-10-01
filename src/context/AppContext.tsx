@@ -58,8 +58,21 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | null>(null);
 
+// Демо-пользователь по умолчанию (используется до загрузки)
+const DEFAULT_USER = {
+  id: 'loading-user',
+  tg_id: 0,
+  username: null,
+  first_name: null,
+  monthly_income: 0,
+  created_at: new Date().toISOString(),
+};
+
 export function AppProvider({ children }: { children: ReactNode }) {
-  const { user, loading: authLoading } = useAuth();
+  const { user: authUser, loading: authLoading } = useAuth();
+  
+  // Используем демо-пользователя как fallback, пока идёт загрузка
+  const user = authUser || DEFAULT_USER;
   
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -67,7 +80,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const isDemo = user?.id === 'demo-user';
+  const isDemo = user?.id === 'demo-user' || user?.id === 'loading-user';
 
   // Загрузка категорий
   const loadCategories = useCallback(async () => {
@@ -387,7 +400,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider value={{
-      user: user!,
+      user,
       categories,
       transactions,
       budgets,
