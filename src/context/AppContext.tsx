@@ -1,7 +1,9 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import type { User, Category, Transaction, Budget, Goal } from '../types';
+import { supabase } from '../lib/supabase';
+import { useAuth } from './AuthContext';
+import type { Category, Transaction, Budget, Goal } from '../types';
 
-// Default categories
+// Категории по умолчанию (запасной вариант)
 const DEFAULT_CATEGORIES: Category[] = [
   { id: '1', name: 'Жильё', icon: '🏠', color: '#6366F1', sort_order: 1 },
   { id: '2', name: 'ЖКХ', icon: '💡', color: '#F59E0B', sort_order: 2 },
@@ -12,16 +14,7 @@ const DEFAULT_CATEGORIES: Category[] = [
   { id: '7', name: 'Маркетплейсы', icon: '📦', color: '#8B5CF6', sort_order: 7 },
 ];
 
-// Demo data
-const DEMO_USER: User = {
-  id: 'demo-user',
-  tg_id: 123456789,
-  username: 'demo_user',
-  first_name: 'Демо',
-  monthly_income: 85000,
-  created_at: new Date().toISOString(),
-};
-
+// Демо-данные (используются только для demo-user)
 const DEMO_TRANSACTIONS: Transaction[] = [
   { id: '1', user_id: 'demo', category_id: '1', amount: 25000, type: 'expense', note: 'Аренда', date: new Date().toISOString().split('T')[0], created_at: new Date().toISOString() },
   { id: '2', user_id: 'demo', category_id: '3', amount: 5200, type: 'expense', note: 'Продукты на неделю', date: new Date().toISOString().split('T')[0], created_at: new Date().toISOString() },
@@ -48,33 +41,152 @@ const DEMO_GOALS: Goal[] = [
 ];
 
 interface AppContextType {
-  user: User;
+  user: { id: string; monthly_income: number; [key: string]: any };
   categories: Category[];
   transactions: Transaction[];
   budgets: Budget[];
   goals: Goal[];
-  updateIncome: (income: number) => void;
-  addTransaction: (categoryId: string, amount: number, type: 'expense' | 'income', note?: string) => void;
-  setBudget: (categoryId: string, month: number, year: number, amount: number) => void;
-  createGoal: (title: string, targetAmount: number, icon: string) => void;
-  updateGoalAmount: (goalId: string, delta: number) => void;
-  deleteGoal: (goalId: string) => void;
+  loading: boolean;
+  updateIncome: (income: number) => Promise<void>;
+  addTransaction: (categoryId: string, amount: number, type: 'expense' | 'income', note?: string) => Promise<void>;
+  setBudget: (categoryId: string, month: number, year: number, amount: number) => Promise<void>;
+  createGoal: (title: string, targetAmount: number, icon: string) => Promise<void>;
+  updateGoalAmount: (goalId: string, delta: number) => Promise<void>;
+  deleteGoal: (goalId: string) => Promise<void>;
+  refreshData: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User>(DEMO_USER);
-  const [categories] = useState<Category[]>(DEFAULT_CATEGORIES);
-  const [transactions, setTransactions] = useState<Transaction[]>(DEMO_TRANSACTIONS);
-  const [budgets, setBudgets] = useState<Budget[]>(DEMO_BUDGETS);
-  const [goals, setGoals] = useState<Goal[]>(DEMO_GOALS);
+  const { user, loading: authLoading } = useAuth();
+  
+  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [budgets, setBudgets] = useState<Budget[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const updateIncome = useCallback((income: number) => {
-    setUser(prev => ({ ...prev, monthly_income: income }));
+  const isDemo = user?.id === 'demo-user';
+
+  // Загрузка категорий
+  const loadCategories = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('sort_order');
+
+      if (!error && data && data.length > 0) {
+        setCategories(data);
+      }
+    } catch (err) {
+      console.log('Using default categories');
+    }
   }, []);
 
-  const addTransaction = useCallback((categoryId: string, amount: number, type: 'expense' | 'income', note?: string) => {
+  // Загрузка транзакций
+  const loadTransactions = useCallback(async () => {
+    if (!user || isDemo) return;
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false });
+
+      if (error) throw error;
+      setTransactions(data || []);
+    } catch (err) {
+      console.error('Error loading transactions:', err);
+    }
+  }, [user, isDemo]);
+
+  // Загрузка бюджетов
+  const loadBudgets = useCallback(async () => {
+    if (!user || isDemo) return;
+    try {
+      const { data, error } = await supabase
+        .from('budgets')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      setBudgets(data || []);
+    } catch (err) {
+      console.error('Error loading budgets:', err);
+    }
+  }, [user, isDemo]);
+
+  // Загрузка целей
+  const loadGoals = useCallback(async () => {
+    if (!user || isDemo) return;
+    try {
+      const { data, error } = await supabase
+        .from('goals')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setGoals(data || []);
+    } catch (err) {
+      console.error('Error loading goals:', err);
+    }
+  }, [user, isDemo]);
+
+  // Загрузка всех данных
+  const refreshData = useCallback(async () => {
+    if (!user) return;
+    setLoading(true);
+    
+    await loadCategories();
+    
+    if (isDemo) {
+      setTransactions(DEMO_TRANSACTIONS);
+      setBudgets(DEMO_BUDGETS);
+      setGoals(DEMO_GOALS);
+    } else {
+      await Promise.all([loadTransactions(), loadBudgets(), loadGoals()]);
+    }
+    
+    setLoading(false);
+  }, [user, isDemo, loadCategories, loadTransactions, loadBudgets, loadGoals]);
+
+  // Первоначальная загрузка
+  useEffect(() => {
+    if (!authLoading && user) {
+      refreshData();
+    }
+  }, [authLoading, user, refreshData]);
+
+  // Обновление дохода
+  const updateIncome = useCallback(async (income: number) => {
+    if (!user) return;
+    
+    if (isDemo) {
+      // В демо-режиме просто логируем
+      console.log('Demo mode: income update', income);
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ monthly_income: income })
+        .eq('id', user.id);
+
+      if (error) throw error;
+    } catch (err) {
+      console.error('Error updating income:', err);
+      throw err;
+    }
+  }, [user, isDemo]);
+
+  // Добавление транзакции
+  const addTransaction = useCallback(async (categoryId: string, amount: number, type: 'expense' | 'income', note?: string) => {
+    if (!user) return;
+
     const newTransaction: Transaction = {
       id: crypto.randomUUID?.() || Math.random().toString(36),
       user_id: user.id,
@@ -85,29 +197,87 @@ export function AppProvider({ children }: { children: ReactNode }) {
       date: new Date().toISOString().split('T')[0],
       created_at: new Date().toISOString(),
     };
-    setTransactions(prev => [newTransaction, ...prev]);
-  }, [user.id]);
 
-  const setBudgetAction = useCallback((categoryId: string, month: number, year: number, amount: number) => {
+    // Оптимистичное обновление UI
+    setTransactions(prev => [newTransaction, ...prev]);
+
+    if (isDemo) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .insert({
+          user_id: user.id,
+          category_id: categoryId,
+          amount,
+          type,
+          note: note || null,
+          date: newTransaction.date,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      // Заменяем временную транзакцию на реальную
+      setTransactions(prev => prev.map(t => t.id === newTransaction.id ? data : t));
+    } catch (err) {
+      console.error('Error adding transaction:', err);
+      // Откатываем оптимистичное обновление
+      setTransactions(prev => prev.filter(t => t.id !== newTransaction.id));
+      throw err;
+    }
+  }, [user, isDemo]);
+
+  // Установка бюджета
+  const setBudget = useCallback(async (categoryId: string, month: number, year: number, amount: number) => {
+    if (!user) return;
+
+    // Оптимистичное обновление
     setBudgets(prev => {
       const existing = prev.findIndex(b => b.category_id === categoryId && b.month === month && b.year === year);
-      if (existing >= 0) {
-        const updated = [...prev];
-        updated[existing] = { ...updated[existing], planned_amount: amount };
-        return updated;
-      }
-      return [...prev, {
+      const newBudget: Budget = {
         id: crypto.randomUUID?.() || Math.random().toString(36),
         user_id: user.id,
         category_id: categoryId,
         month,
         year,
         planned_amount: amount,
-      }];
+      };
+      if (existing >= 0) {
+        const updated = [...prev];
+        updated[existing] = newBudget;
+        return updated;
+      }
+      return [...prev, newBudget];
     });
-  }, [user.id]);
 
-  const createGoal = useCallback((title: string, targetAmount: number, icon: string) => {
+    if (isDemo) return;
+
+    try {
+      const { error } = await supabase
+        .from('budgets')
+        .upsert({
+          user_id: user.id,
+          category_id: categoryId,
+          month,
+          year,
+          planned_amount: amount,
+        }, {
+          onConflict: 'user_id,category_id,month,year'
+        });
+
+      if (error) throw error;
+    } catch (err) {
+      console.error('Error setting budget:', err);
+      throw err;
+    }
+  }, [user, isDemo]);
+
+  // Создание цели
+  const createGoal = useCallback(async (title: string, targetAmount: number, icon: string) => {
+    if (!user) return;
+
     const newGoal: Goal = {
       id: crypto.randomUUID?.() || Math.random().toString(36),
       user_id: user.id,
@@ -118,10 +288,38 @@ export function AppProvider({ children }: { children: ReactNode }) {
       is_completed: false,
       created_at: new Date().toISOString(),
     };
-    setGoals(prev => [newGoal, ...prev]);
-  }, [user.id]);
 
-  const updateGoalAmount = useCallback((goalId: string, delta: number) => {
+    // Оптимистичное обновление
+    setGoals(prev => [newGoal, ...prev]);
+
+    if (isDemo) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('goals')
+        .insert({
+          user_id: user.id,
+          title,
+          target_amount: targetAmount,
+          icon,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      setGoals(prev => prev.map(g => g.id === newGoal.id ? data : g));
+    } catch (err) {
+      console.error('Error creating goal:', err);
+      setGoals(prev => prev.filter(g => g.id !== newGoal.id));
+      throw err;
+    }
+  }, [user, isDemo]);
+
+  // Обновление суммы цели
+  const updateGoalAmount = useCallback(async (goalId: string, delta: number) => {
+    if (!user) return;
+
+    // Оптимистичное обновление
     setGoals(prev => prev.map(g => {
       if (g.id === goalId) {
         const newAmount = Math.max(0, g.current_amount + delta);
@@ -133,17 +331,70 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       return g;
     }));
-  }, []);
 
-  const deleteGoal = useCallback((goalId: string) => {
+    if (isDemo) return;
+
+    try {
+      const goal = goals.find(g => g.id === goalId);
+      if (!goal) return;
+
+      const newAmount = Math.max(0, goal.current_amount + delta);
+      const isCompleted = newAmount >= goal.target_amount;
+
+      const { error } = await supabase
+        .from('goals')
+        .update({
+          current_amount: newAmount,
+          is_completed: isCompleted,
+        })
+        .eq('id', goalId);
+
+      if (error) throw error;
+    } catch (err) {
+      console.error('Error updating goal:', err);
+      // Откатываем
+      await loadGoals();
+      throw err;
+    }
+  }, [user, isDemo, goals, loadGoals]);
+
+  // Удаление цели
+  const deleteGoal = useCallback(async (goalId: string) => {
+    if (!user) return;
+
     setGoals(prev => prev.filter(g => g.id !== goalId));
-  }, []);
+
+    if (isDemo) return;
+
+    try {
+      const { error } = await supabase
+        .from('goals')
+        .delete()
+        .eq('id', goalId);
+
+      if (error) throw error;
+    } catch (err) {
+      console.error('Error deleting goal:', err);
+      await loadGoals();
+      throw err;
+    }
+  }, [user, isDemo, loadGoals]);
 
   return (
     <AppContext.Provider value={{
-      user, categories, transactions, budgets, goals,
-      updateIncome, addTransaction, setBudget: setBudgetAction,
-      createGoal, updateGoalAmount, deleteGoal,
+      user: user!,
+      categories,
+      transactions,
+      budgets,
+      goals,
+      loading: loading || authLoading,
+      updateIncome,
+      addTransaction,
+      setBudget,
+      createGoal,
+      updateGoalAmount,
+      deleteGoal,
+      refreshData,
     }}>
       {children}
     </AppContext.Provider>
