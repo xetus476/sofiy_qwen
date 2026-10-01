@@ -19,11 +19,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = async () => {
     try {
+      console.log('🚀 AuthContext: Starting user fetch...');
+      alert('AuthContext: Starting user fetch'); // Временная отладка
+      
       setLoading(true);
       setError(null);
 
       // Пытаемся авторизоваться через Telegram Edge Function
+      console.log('🔐 Calling authenticateWithTelegram...');
       const authenticatedUser = await authenticateWithTelegram();
+      console.log('📥 authenticateWithTelegram result:', authenticatedUser);
 
       if (authenticatedUser) {
         // Успешная авторизация — используем реального пользователя
