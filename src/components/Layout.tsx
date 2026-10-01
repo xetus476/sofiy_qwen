@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useEffect } from 'react';
 import { initTelegram, getThemeColors, getColorScheme } from '../lib/telegram';
+import { useAuth } from '../context/AuthContext';
 
 const navItems = [
   { to: '/', icon: '🏠', label: 'Главная' },
@@ -10,11 +11,11 @@ const navItems = [
 ];
 
 export function Layout() {
+  const { loading } = useAuth();
+
   useEffect(() => {
-    // Initialize Telegram WebApp
     initTelegram();
     
-    // Apply Telegram theme colors
     const colors = getThemeColors();
     const root = document.documentElement;
     root.style.setProperty('--tg-theme-bg-color', colors.bg_color);
@@ -24,11 +25,23 @@ export function Layout() {
     root.style.setProperty('--tg-theme-button-text-color', colors.button_text_color);
     root.style.setProperty('--tg-theme-secondary-bg-color', colors.secondary_bg_color);
     
-    // Set color scheme class
     const scheme = getColorScheme();
     root.classList.remove('light', 'dark');
     root.classList.add(scheme);
   }, []);
+
+  // Экран загрузки
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full bg-[var(--tg-theme-bg-color)]">
+        <div className="text-center">
+          <div className="text-4xl mb-4 animate-bounce">💰</div>
+          <p className="text-[var(--tg-theme-text-color)] text-lg font-medium">Загрузка...</p>
+          <p className="text-[var(--tg-theme-hint-color)] text-sm mt-2">FinanceBot Mini App</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-[var(--tg-theme-bg-color)] text-[var(--tg-theme-text-color)]">

@@ -19,30 +19,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUser = async () => {
     try {
-      console.log('🚀 AuthContext: Starting user fetch...');
-      alert('AuthContext: Starting user fetch'); // Временная отладка
-      
+      console.log('🚀 [AuthContext] Starting user fetch...');
       setLoading(true);
       setError(null);
 
       // Пытаемся авторизоваться через Telegram Edge Function
-      console.log('🔐 Calling authenticateWithTelegram...');
       const authenticatedUser = await authenticateWithTelegram();
-      console.log('📥 authenticateWithTelegram result:', authenticatedUser);
 
       if (authenticatedUser) {
-        // Успешная авторизация — используем реального пользователя
-        console.log('✅ User authenticated:', authenticatedUser);
+        console.log('✅ [AuthContext] User authenticated:', authenticatedUser);
         setUser(authenticatedUser);
         return;
       }
 
       // Если не в Telegram или ошибка — проверяем наличие tg_user
       const tgUser = getTelegramUser();
+      console.log('👤 [AuthContext] Telegram user from WebApp:', tgUser);
       
       if (tgUser) {
         // Мы в Telegram, но Edge Function не сработала
-        // Пытаемся найти/создать пользователя напрямую
+        console.log('⚠️ [AuthContext] In Telegram but Edge Function failed, trying direct DB access');
+        
         const { data: existingUser, error: fetchError } = await supabase
           .from('users')
           .select('*')
@@ -50,11 +47,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .maybeSingle();
 
         if (!fetchError && existingUser) {
+          console.log('✅ [AuthContext] Found existing user:', existingUser);
           setUser(existingUser);
           return;
         }
 
         // Создаём нового пользователя
+        console.log('🆕 [AuthContext] Creating new user...');
         const { data: newUser, error: insertError } = await supabase
           .from('users')
           .insert({
@@ -67,13 +66,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .single();
 
         if (!insertError && newUser) {
+          console.log('✅ [AuthContext] New user created:', newUser);
           setUser(newUser);
           return;
+        } else {
+          console.error('❌ [AuthContext] Error creating user:', insertError);
         }
       }
 
       // Fallback на демо-режим
-      console.log('📱 Using demo mode');
+      console.log('📱 [AuthContext] Using DEMO MODE');
       const demoUser: User = {
         id: 'demo-user',
         tg_id: 123456789,
@@ -84,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
       setUser(demoUser);
     } catch (err: any) {
-      console.error('Error fetching user:', err);
+      console.error('❌ [AuthContext] Error:', err.message);
       setError(err.message);
       
       // Fallback на демо-режим при ошибке
@@ -99,6 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(demoUser);
     } finally {
       setLoading(false);
+      console.log('🏁 [AuthContext] User fetch complete. User:', user?.id || 'null');
     }
   };
 
