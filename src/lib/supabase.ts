@@ -3,18 +3,21 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://demo.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'demo-anon-key';
 
+// Создаём клиент БЕЗ auth (используем service role через Edge Function)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Функция для верификации Telegram и получения сессии
-export async function authenticateWithTelegram() {
+// Функция для верификации Telegram через Edge Function
+export async function authenticateWithTelegram(): Promise<any | null> {
   const tg = window.Telegram?.WebApp;
   
   if (!tg?.initData) {
-    console.log('Not in Telegram, using demo mode');
+    console.log('📱 Not in Telegram, using demo mode');
     return null;
   }
 
   try {
+    console.log('🔐 Verifying Telegram initData...');
+    
     const response = await fetch(
       `${supabaseUrl}/functions/v1/verify-telegram`,
       {
@@ -28,22 +31,20 @@ export async function authenticateWithTelegram() {
     );
 
     if (!response.ok) {
-      throw new Error('Authentication failed');
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP ${response.status}`);
     }
 
-    const { user, session } = await response.json();
-
-    // Устанавливаем сессию в Supabase
-    if (session?.access_token) {
-      await supabase.auth.setSession({
-        access_token: session.access_token,
-        refresh_token: session.refresh_token,
-      });
+    const result = await response.json();
+    
+    if (result.success && result.user) {
+      console.log('✅ User authenticated:', result.user);
+      return result.user;
     }
 
-    return user;
-  } catch (error) {
-    console.error('Telegram auth error:', error);
+    throw new Error('Invalid response from Edge Function');
+  } catch (error: any) {
+    console.error('❌ Telegram auth error:', error.message);
     return null;
   }
 }

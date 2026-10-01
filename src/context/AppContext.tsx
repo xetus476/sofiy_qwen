@@ -89,13 +89,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const loadTransactions = useCallback(async () => {
     if (!user || isDemo) return;
     try {
+      console.log('📥 Loading transactions for user:', user.id);
       const { data, error } = await supabase
         .from('transactions')
         .select('*')
         .eq('user_id', user.id)
         .order('date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error loading transactions:', error);
+        throw error;
+      }
+      console.log('✅ Loaded transactions:', data?.length || 0);
       setTransactions(data || []);
     } catch (err) {
       console.error('Error loading transactions:', err);
