@@ -1,0 +1,66 @@
+import { NavLink, Outlet } from 'react-router-dom';
+import { useEffect } from 'react';
+import { initTelegram, getThemeColors, getColorScheme } from '../lib/telegram';
+
+const navItems = [
+  { to: '/', icon: '🏠', label: 'Главная' },
+  { to: '/stats', icon: '📊', label: 'Статистика' },
+  { to: '/goals', icon: '🎯', label: 'Цели' },
+  { to: '/analytics', icon: '📈', label: 'Аналитика' },
+];
+
+export function Layout() {
+  useEffect(() => {
+    // Initialize Telegram WebApp
+    initTelegram();
+    
+    // Apply Telegram theme colors
+    const colors = getThemeColors();
+    const root = document.documentElement;
+    root.style.setProperty('--tg-theme-bg-color', colors.bg_color);
+    root.style.setProperty('--tg-theme-text-color', colors.text_color);
+    root.style.setProperty('--tg-theme-hint-color', colors.hint_color);
+    root.style.setProperty('--tg-theme-button-color', colors.button_color);
+    root.style.setProperty('--tg-theme-button-text-color', colors.button_text_color);
+    root.style.setProperty('--tg-theme-secondary-bg-color', colors.secondary_bg_color);
+    
+    // Set color scheme class
+    const scheme = getColorScheme();
+    root.classList.remove('light', 'dark');
+    root.classList.add(scheme);
+  }, []);
+
+  return (
+    <div className="flex flex-col h-full bg-[var(--tg-theme-bg-color)] text-[var(--tg-theme-text-color)]">
+      {/* Main content */}
+      <div className="flex-1 overflow-y-auto pb-20 overscroll-contain">
+        <Outlet />
+      </div>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-[var(--tg-theme-bg-color)] border-t border-gray-200/50 dark:border-gray-700/50 z-30 backdrop-blur-lg"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      >
+        <div className="flex items-center justify-around h-16 max-w-lg mx-auto">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === '/'}
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center flex-1 h-full transition-all duration-200 ${
+                  isActive
+                    ? 'text-[var(--tg-theme-button-color)] scale-105'
+                    : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'
+                }`
+              }
+            >
+              <span className="text-xl mb-0.5">{item.icon}</span>
+              <span className="text-[10px] font-medium">{item.label}</span>
+            </NavLink>
+          ))}
+        </div>
+      </nav>
+    </div>
+  );
+}
