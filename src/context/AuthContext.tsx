@@ -27,12 +27,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const authenticatedUser = await authenticateWithTelegram();
 
       if (authenticatedUser) {
-        console.log('✅ [AuthContext] User authenticated via Edge Function:', authenticatedUser);
+        console.log('✅ [AuthContext] User authenticated:', authenticatedUser);
         setUser(authenticatedUser);
         return;
       }
 
-      // Если не в Telegram или Edge Function не работает — пробуем локальный режим
+      // Если не в Telegram или ошибка — проверяем наличие tg_user
       const tgUser = getTelegramUser();
       console.log('👤 [AuthContext] Telegram user from WebApp:', tgUser);
       
@@ -74,42 +74,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // Локальный режим: ищем первого пользователя в БД
-      console.log('🔍 [AuthContext] Trying local mode: fetching first user from DB...');
-      const { data: localUser, error: localError } = await supabase
-        .from('users')
-        .select('*')
-        .limit(1)
-        .maybeSingle();
-
-      if (!localError && localUser) {
-        console.log('✅ [AuthContext] Using local user:', localUser);
-        setUser(localUser);
-        return;
-      }
-
-      // Если нет пользователей — создаём демо
-      console.log('🆕 [AuthContext] No users found, creating demo user...');
-      const { data: demoUser, error: demoError } = await supabase
-        .from('users')
-        .insert({
-          tg_id: 999999999,
-          username: 'demo_local',
-          first_name: 'Демо',
-          monthly_income: 85000,
-        })
-        .select()
-        .single();
-
-      if (!demoError && demoUser) {
-        console.log('✅ [AuthContext] Demo user created:', demoUser);
-        setUser(demoUser);
-        return;
-      }
-
-      // Fallback на хардкод (если Supabase недоступен)
-      console.log('📱 [AuthContext] Supabase unavailable, using hardcoded demo mode');
-      const hardcodedUser: User = {
+      // Fallback на демо-режим
+      console.log('📱 [AuthContext] Using DEMO MODE');
+      const demoUser: User = {
         id: 'demo-user',
         tg_id: 123456789,
         username: 'demo_user',
@@ -117,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         monthly_income: 85000,
         created_at: new Date().toISOString(),
       };
-      setUser(hardcodedUser);
+      setUser(demoUser);
     } catch (err: any) {
       console.error('❌ [AuthContext] Error:', err.message);
       setError(err.message);

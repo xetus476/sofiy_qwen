@@ -8,10 +8,10 @@ interface IncomeBlockProps {
 
 export function IncomeBlock({ income, onEdit, onAdd }: IncomeBlockProps) {
   return (
-    <div className="p-4 rounded-2xl lavender-gradient text-white lavender-shadow">
+    <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm opacity-90">Заработная плата</p>
+          <p className="text-sm opacity-80">Заработная плата</p>
           {income > 0 ? (
             <p className="text-2xl font-bold mt-1">{formatCurrency(income)}</p>
           ) : (
@@ -21,14 +21,14 @@ export function IncomeBlock({ income, onEdit, onAdd }: IncomeBlockProps) {
         <div className="flex gap-2">
           <button
             onClick={onAdd}
-            className="w-10 h-10 rounded-full bg-white/25 flex items-center justify-center active:scale-90 transition-transform backdrop-blur-sm"
+            className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center active:scale-90 transition-transform"
             title="Увеличить зарплату"
           >
             <span className="text-lg">➕</span>
           </button>
           <button
             onClick={onEdit}
-            className="w-10 h-10 rounded-full bg-white/25 flex items-center justify-center active:scale-90 transition-transform backdrop-blur-sm"
+            className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center active:scale-90 transition-transform"
             title="Редактировать зарплату"
           >
             <span className="text-lg">✏️</span>

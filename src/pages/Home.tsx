@@ -114,13 +114,13 @@ export function Home() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-800/30">
-          <p className="text-xs text-rose-500 font-medium">Расходы в этом месяце</p>
-          <p className="text-lg font-bold text-rose-600 dark:text-rose-400">{formatCurrency(totalExpenses)}</p>
+        <div className="p-3 rounded-2xl bg-red-50 dark:bg-red-900/20">
+          <p className="text-xs text-red-500">Расходы в этом месяце</p>
+          <p className="text-lg font-bold text-red-600 dark:text-red-400">{formatCurrency(totalExpenses)}</p>
         </div>
-        <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/30">
-          <p className="text-xs text-emerald-500 font-medium">Остаток</p>
-          <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+        <div className="p-3 rounded-2xl bg-green-50 dark:bg-green-900/20">
+          <p className="text-xs text-green-500">Остаток</p>
+          <p className="text-lg font-bold text-green-600 dark:text-green-400">
             {formatCurrency(user.monthly_income - totalExpenses)}
           </p>
         </div>
@@ -129,7 +129,7 @@ export function Home() {
       {/* Add Goal Button */}
       <button
         onClick={() => setShowGoalSheet(true)}
-        className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-[var(--tg-theme-button-color)] to-[var(--lavender-400)] text-white font-medium text-sm active:scale-[0.98] transition-transform flex items-center justify-center gap-2 lavender-shadow"
+        className="w-full py-3 px-4 rounded-2xl bg-[var(--tg-theme-button-color,#3390ec)] text-white font-medium text-sm active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
       >
         <span>🎯</span>
         <span>+ Добавить цель</span>
@@ -164,13 +164,13 @@ export function Home() {
               value={incomeInput}
               onChange={(e) => setIncomeInput(e.target.value)}
               placeholder="Введите сумму"
-              className="w-full px-4 py-3 rounded-xl bg-[var(--lavender-100)] text-lg font-medium outline-none focus:ring-2 focus:ring-[var(--tg-theme-button-color)] text-[var(--tg-theme-text-color)]"
+              className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-lg font-medium outline-none focus:ring-2 focus:ring-indigo-500 text-[var(--tg-theme-text-color,#000)]"
               inputMode="numeric"
             />
           </div>
           <button
             onClick={handleSaveIncome}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--tg-theme-button-color)] to-[var(--lavender-400)] text-white font-medium active:scale-[0.98] transition-transform lavender-shadow"
+            className="w-full py-3 rounded-xl bg-[var(--tg-theme-button-color,#3390ec)] text-white font-medium active:scale-[0.98] transition-transform"
           >
             Сохранить
           </button>
@@ -184,35 +184,35 @@ export function Home() {
         title="💵 Увеличить зарплату"
       >
         <div className="space-y-4">
-          <div className="p-3 rounded-xl bg-[var(--lavender-100)] border border-[var(--lavender-200)]">
-            <p className="text-xs text-[var(--lavender-700)] font-medium">Текущая зарплата</p>
-            <p className="text-lg font-bold text-[var(--lavender-900)]">
+          <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-900/20">
+            <p className="text-xs text-indigo-600 dark:text-indigo-400">Текущая зарплата</p>
+            <p className="text-lg font-bold text-indigo-700 dark:text-indigo-300">
               {formatCurrency(user.monthly_income || 0)}
             </p>
           </div>
           <div>
-            <label className="text-sm text-[var(--tg-theme-hint-color)] mb-1 block">На какую сумму увеличить</label>
+            <label className="text-sm text-gray-500 mb-1 block">На какую сумму увеличить</label>
             <input
               type="number"
               value={addIncomeInput}
               onChange={(e) => setAddIncomeInput(e.target.value)}
               placeholder="0 ₽"
-              className="w-full px-4 py-3 rounded-xl bg-[var(--lavender-100)] text-lg font-medium outline-none focus:ring-2 focus:ring-emerald-500 text-[var(--tg-theme-text-color)]"
+              className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-lg font-medium outline-none focus:ring-2 focus:ring-green-500 text-[var(--tg-theme-text-color,#000)]"
               inputMode="numeric"
               autoFocus
             />
           </div>
           {addIncomeInput && !isNaN(parseFloat(addIncomeInput)) && (
-            <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/30">
-              <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Новая зарплата</p>
-              <p className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+            <div className="p-3 rounded-xl bg-green-50 dark:bg-green-900/20">
+              <p className="text-xs text-green-600 dark:text-green-400">Новая зарплата</p>
+              <p className="text-lg font-bold text-green-700 dark:text-green-300">
                 {formatCurrency((user.monthly_income || 0) + parseFloat(addIncomeInput))}
               </p>
             </div>
           )}
           <button
             onClick={handleAddIncome}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-emerald-500 text-white font-medium active:scale-[0.98] transition-transform shadow-sm"
+            className="w-full py-3 rounded-xl bg-green-500 text-white font-medium active:scale-[0.98] transition-transform"
           >
             ➕ Увеличить зарплату
           </button>
@@ -233,24 +233,24 @@ export function Home() {
               value={expenseInput}
               onChange={(e) => setExpenseInput(e.target.value)}
               placeholder="0 ₽"
-              className="w-full px-4 py-3 rounded-xl bg-[var(--lavender-100)] text-lg font-medium outline-none focus:ring-2 focus:ring-[var(--tg-theme-button-color)] text-[var(--tg-theme-text-color)]"
+              className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-lg font-medium outline-none focus:ring-2 focus:ring-indigo-500 text-[var(--tg-theme-text-color,#000)]"
               inputMode="numeric"
               autoFocus
             />
           </div>
           <div>
-            <label className="text-sm text-[var(--tg-theme-hint-color)] mb-1 block">Комментарий (необязательно)</label>
+            <label className="text-sm text-gray-500 mb-1 block">Комментарий (необязательно)</label>
             <input
               type="text"
               value={expenseNote}
               onChange={(e) => setExpenseNote(e.target.value)}
               placeholder="Например: Обед"
-              className="w-full px-4 py-3 rounded-xl bg-[var(--lavender-100)] text-base outline-none focus:ring-2 focus:ring-[var(--tg-theme-button-color)] text-[var(--tg-theme-text-color)]"
+              className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-base outline-none focus:ring-2 focus:ring-indigo-500 text-[var(--tg-theme-text-color,#000)]"
             />
           </div>
           <button
             onClick={handleAddExpense}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--tg-theme-button-color)] to-[var(--lavender-400)] text-white font-medium active:scale-[0.98] transition-transform lavender-shadow"
+            className="w-full py-3 rounded-xl bg-[var(--tg-theme-button-color,#3390ec)] text-white font-medium active:scale-[0.98] transition-transform"
           >
             Добавить расход
           </button>
@@ -265,28 +265,28 @@ export function Home() {
       >
         <div className="space-y-4">
           <div>
-            <label className="text-sm text-[var(--tg-theme-hint-color)] mb-1 block">Название цели</label>
+            <label className="text-sm text-gray-500 mb-1 block">Название цели</label>
             <input
               type="text"
               value={goalTitle}
               onChange={(e) => setGoalTitle(e.target.value)}
               placeholder="Например: Отпуск"
-              className="w-full px-4 py-3 rounded-xl bg-[var(--lavender-100)] text-base outline-none focus:ring-2 focus:ring-[var(--tg-theme-button-color)] text-[var(--tg-theme-text-color)]"
+              className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-base outline-none focus:ring-2 focus:ring-indigo-500 text-[var(--tg-theme-text-color,#000)]"
             />
           </div>
           <div>
-            <label className="text-sm text-[var(--tg-theme-hint-color)] mb-1 block">Сколько нужно денег</label>
+            <label className="text-sm text-gray-500 mb-1 block">Сколько нужно денег</label>
             <input
               type="number"
               value={goalAmount}
               onChange={(e) => setGoalAmount(e.target.value)}
               placeholder="0 ₽"
-              className="w-full px-4 py-3 rounded-xl bg-[var(--lavender-100)] text-lg font-medium outline-none focus:ring-2 focus:ring-[var(--tg-theme-button-color)] text-[var(--tg-theme-text-color)]"
+              className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-lg font-medium outline-none focus:ring-2 focus:ring-indigo-500 text-[var(--tg-theme-text-color,#000)]"
               inputMode="numeric"
             />
           </div>
           <div>
-            <label className="text-sm text-[var(--tg-theme-hint-color)] mb-2 block">Иконка</label>
+            <label className="text-sm text-gray-500 mb-2 block">Иконка</label>
             <div className="flex gap-2 flex-wrap">
               {['🎯', '✈️', '🏠', '🚗', '💻', '📱', '🎓', '💍', '🏖️', '🎁'].map(icon => (
                 <button
@@ -294,8 +294,8 @@ export function Home() {
                   onClick={() => setGoalIcon(icon)}
                   className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl transition-all ${
                     goalIcon === icon
-                      ? 'bg-[var(--lavender-200)] ring-2 ring-[var(--tg-theme-button-color)] scale-110'
-                      : 'bg-[var(--lavender-100)]'
+                      ? 'bg-indigo-100 ring-2 ring-indigo-500 scale-110'
+                      : 'bg-gray-100 dark:bg-gray-800'
                   }`}
                 >
                   {icon}
@@ -305,7 +305,7 @@ export function Home() {
           </div>
           <button
             onClick={handleCreateGoal}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--tg-theme-button-color)] to-[var(--lavender-400)] text-white font-medium active:scale-[0.98] transition-transform lavender-shadow"
+            className="w-full py-3 rounded-xl bg-[var(--tg-theme-button-color,#3390ec)] text-white font-medium active:scale-[0.98] transition-transform"
           >
             Создать цель
           </button>

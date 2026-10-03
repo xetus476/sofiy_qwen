@@ -61,7 +61,7 @@ export function Goals() {
         <h1 className="text-xl font-bold">🎯 Цели</h1>
         <button
           onClick={() => setShowCreateSheet(true)}
-          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[var(--tg-theme-button-color)] to-[var(--lavender-400)] text-white text-sm font-medium active:scale-95 transition-transform lavender-shadow"
+          className="px-3 py-1.5 rounded-xl bg-[var(--tg-theme-button-color,#3390ec)] text-white text-sm font-medium active:scale-95 transition-transform"
         >
           + Новая
         </button>
@@ -73,8 +73,8 @@ export function Goals() {
           onClick={() => setFilter('active')}
           className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${
             filter === 'active'
-              ? 'bg-gradient-to-r from-[var(--tg-theme-button-color)] to-[var(--lavender-400)] text-white lavender-shadow'
-              : 'bg-[var(--lavender-100)] text-[var(--tg-theme-hint-color)]'
+              ? 'bg-indigo-500 text-white'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
           }`}
         >
           Активные ({goals.filter(g => !g.is_completed).length})
@@ -83,8 +83,8 @@ export function Goals() {
           onClick={() => setFilter('completed')}
           className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${
             filter === 'completed'
-              ? 'bg-gradient-to-r from-emerald-400 to-emerald-500 text-white shadow-sm'
-              : 'bg-[var(--lavender-100)] text-[var(--tg-theme-hint-color)]'
+              ? 'bg-green-500 text-white'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
           }`}
         >
           Достигнутые ({goals.filter(g => g.is_completed).length})
@@ -95,13 +95,13 @@ export function Goals() {
       {filteredGoals.length === 0 ? (
         <div className="text-center py-12">
           <span className="text-4xl">{filter === 'active' ? '🎯' : '🏆'}</span>
-          <p className="text-[var(--tg-theme-hint-color)] mt-3">
+          <p className="text-gray-500 mt-3">
             {filter === 'active' ? 'Нет активных целей' : 'Нет достигнутых целей'}
           </p>
           {filter === 'active' && (
             <button
               onClick={() => setShowCreateSheet(true)}
-              className="mt-4 px-4 py-2 rounded-xl bg-gradient-to-r from-[var(--tg-theme-button-color)] to-[var(--lavender-400)] text-white text-sm font-medium active:scale-95 transition-transform lavender-shadow"
+              className="mt-4 px-4 py-2 rounded-xl bg-indigo-500 text-white text-sm font-medium active:scale-95 transition-transform"
             >
               Создать первую цель
             </button>
@@ -138,28 +138,28 @@ export function Goals() {
       >
         <div className="space-y-4">
           <div>
-            <label className="text-sm text-[var(--tg-theme-hint-color)] mb-1 block">Название цели</label>
+            <label className="text-sm text-gray-500 mb-1 block">Название цели</label>
             <input
               type="text"
               value={goalTitle}
               onChange={(e) => setGoalTitle(e.target.value)}
               placeholder="Например: Отпуск в Турции"
-              className="w-full px-4 py-3 rounded-xl bg-[var(--lavender-100)] text-base outline-none focus:ring-2 focus:ring-[var(--tg-theme-button-color)] text-[var(--tg-theme-text-color)]"
+              className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-base outline-none focus:ring-2 focus:ring-indigo-500 text-[var(--tg-theme-text-color,#000)]"
             />
           </div>
           <div>
-            <label className="text-sm text-[var(--tg-theme-hint-color)] mb-1 block">Целевая сумма</label>
+            <label className="text-sm text-gray-500 mb-1 block">Целевая сумма</label>
             <input
               type="number"
               value={goalAmount}
               onChange={(e) => setGoalAmount(e.target.value)}
               placeholder="0 ₽"
-              className="w-full px-4 py-3 rounded-xl bg-[var(--lavender-100)] text-lg font-medium outline-none focus:ring-2 focus:ring-[var(--tg-theme-button-color)] text-[var(--tg-theme-text-color)]"
+              className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-lg font-medium outline-none focus:ring-2 focus:ring-indigo-500 text-[var(--tg-theme-text-color,#000)]"
               inputMode="numeric"
             />
           </div>
           <div>
-            <label className="text-sm text-[var(--tg-theme-hint-color)] mb-2 block">Иконка</label>
+            <label className="text-sm text-gray-500 mb-2 block">Иконка</label>
             <div className="flex gap-2 flex-wrap">
               {goalIcons.map(icon => (
                 <button
@@ -167,8 +167,8 @@ export function Goals() {
                   onClick={() => setGoalIcon(icon)}
                   className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl transition-all ${
                     goalIcon === icon
-                      ? 'bg-[var(--lavender-200)] ring-2 ring-[var(--tg-theme-button-color)] scale-110'
-                      : 'bg-[var(--lavender-100)]'
+                      ? 'bg-indigo-100 ring-2 ring-indigo-500 scale-110'
+                      : 'bg-gray-100 dark:bg-gray-800'
                   }`}
                 >
                   {icon}
@@ -178,7 +178,7 @@ export function Goals() {
           </div>
           <button
             onClick={handleCreateGoal}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--tg-theme-button-color)] to-[var(--lavender-400)] text-white font-medium active:scale-[0.98] transition-transform lavender-shadow"
+            className="w-full py-3 rounded-xl bg-[var(--tg-theme-button-color,#3390ec)] text-white font-medium active:scale-[0.98] transition-transform"
           >
             Создать цель
           </button>
@@ -193,20 +193,20 @@ export function Goals() {
       >
         <div className="space-y-4">
           <div>
-            <label className="text-sm text-[var(--tg-theme-hint-color)] mb-1 block">Сумма</label>
+            <label className="text-sm text-gray-500 mb-1 block">Сумма</label>
             <input
               type="number"
               value={amountInput}
               onChange={(e) => setAmountInput(e.target.value)}
               placeholder="0 ₽"
-              className="w-full px-4 py-3 rounded-xl bg-[var(--lavender-100)] text-lg font-medium outline-none focus:ring-2 focus:ring-emerald-500 text-[var(--tg-theme-text-color)]"
+              className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-lg font-medium outline-none focus:ring-2 focus:ring-green-500 text-[var(--tg-theme-text-color,#000)]"
               inputMode="numeric"
               autoFocus
             />
           </div>
           <button
             onClick={handleAddToGoal}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-emerald-500 text-white font-medium active:scale-[0.98] transition-transform shadow-sm"
+            className="w-full py-3 rounded-xl bg-green-500 text-white font-medium active:scale-[0.98] transition-transform"
           >
             + Отложить
           </button>
@@ -221,20 +221,20 @@ export function Goals() {
       >
         <div className="space-y-4">
           <div>
-            <label className="text-sm text-[var(--tg-theme-hint-color)] mb-1 block">Сумма</label>
+            <label className="text-sm text-gray-500 mb-1 block">Сумма</label>
             <input
               type="number"
               value={amountInput}
               onChange={(e) => setAmountInput(e.target.value)}
               placeholder="0 ₽"
-              className="w-full px-4 py-3 rounded-xl bg-[var(--lavender-100)] text-lg font-medium outline-none focus:ring-2 focus:ring-rose-500 text-[var(--tg-theme-text-color)]"
+              className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-lg font-medium outline-none focus:ring-2 focus:ring-red-500 text-[var(--tg-theme-text-color,#000)]"
               inputMode="numeric"
               autoFocus
             />
           </div>
           <button
             onClick={handleSpendFromGoal}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-rose-400 to-rose-500 text-white font-medium active:scale-[0.98] transition-transform shadow-sm"
+            className="w-full py-3 rounded-xl bg-red-500 text-white font-medium active:scale-[0.98] transition-transform"
           >
             − Потратить
           </button>

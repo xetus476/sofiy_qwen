@@ -15,7 +15,7 @@ export function ProgressBar({ value, color, height = 8, showLabel = false }: Pro
   return (
     <div className="w-full">
       <div
-        className="w-full rounded-full overflow-hidden bg-[var(--lavender-100)]"
+        className="w-full rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700"
         style={{ height }}
       >
         <motion.div
@@ -27,7 +27,7 @@ export function ProgressBar({ value, color, height = 8, showLabel = false }: Pro
         />
       </div>
       {showLabel && (
-        <span className="text-xs text-[var(--tg-theme-hint-color)] mt-1">
+        <span className="text-xs text-gray-500 mt-1">
           {Math.round(clampedValue)}%
         </span>
       )}

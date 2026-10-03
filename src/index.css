@@ -1,35 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  /* Лавандовая тема — светлая */
-  --tg-theme-bg-color: #FAF8FF;
-  --tg-theme-text-color: #2D1B69;
-  --tg-theme-hint-color: #9B8EC4;
-  --tg-theme-button-color: #9B87F5;
-  --tg-theme-button-text-color: #FFFFFF;
-  --tg-theme-secondary-bg-color: #F0ECFF;
-  
-  /* Дополнительные лавандовые оттенки */
-  --lavender-50: #FAF8FF;
-  --lavender-100: #F0ECFF;
-  --lavender-200: #E6E0F8;
-  --lavender-300: #D4C9F0;
-  --lavender-400: #B8A9F0;
-  --lavender-500: #9B87F5;
-  --lavender-600: #7C6BC4;
-  --lavender-700: #5E4F9E;
-  --lavender-800: #4A3D7A;
-  --lavender-900: #2D1B69;
+  --tg-theme-bg-color: #ffffff;
+  --tg-theme-text-color: #1c1c1e;
+  --tg-theme-hint-color: #8e8e93;
+  --tg-theme-button-color: #007aff;
+  --tg-theme-button-text-color: #ffffff;
+  --tg-theme-secondary-bg-color: #f2f2f7;
 }
 
 :root.dark {
-  /* Лавандовая тема — тёмная */
-  --tg-theme-bg-color: #1A1425;
-  --tg-theme-text-color: #F0ECFF;
-  --tg-theme-hint-color: #9B8EC4;
-  --tg-theme-button-color: #9B87F5;
-  --tg-theme-button-text-color: #FFFFFF;
-  --tg-theme-secondary-bg-color: #2D1B47;
+  --tg-theme-bg-color: #1c1c1e;
+  --tg-theme-text-color: #ffffff;
+  --tg-theme-hint-color: #8e8e93;
+  --tg-theme-button-color: #0a84ff;
+  --tg-theme-button-text-color: #ffffff;
+  --tg-theme-secondary-bg-color: #2c2c2e;
 }
 
 * {
@@ -105,17 +91,4 @@ button:active {
 
 .animate-fade-in-up {
   animation: fadeInUp 0.3s ease-out forwards;
-}
-
-/* Лавандовые утилитарные классы */
-.lavender-gradient {
-  background: linear-gradient(135deg, #9B87F5 0%, #C4B5FD 100%);
-}
-
-.lavender-gradient-soft {
-  background: linear-gradient(135deg, #E6E0F8 0%, #F0ECFF 100%);
-}
-
-.lavender-shadow {
-  box-shadow: 0 4px 14px rgba(155, 135, 245, 0.25);
 }

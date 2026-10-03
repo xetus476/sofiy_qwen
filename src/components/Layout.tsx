@@ -35,12 +35,9 @@ export function Layout() {
     return (
       <div className="flex items-center justify-center h-full bg-[var(--tg-theme-bg-color)]">
         <div className="text-center">
-          <div className="text-5xl mb-4 animate-bounce">💰</div>
-          <p className="text-[var(--tg-theme-text-color)] text-lg font-semibold">Загрузка...</p>
+          <div className="text-4xl mb-4 animate-bounce">💰</div>
+          <p className="text-[var(--tg-theme-text-color)] text-lg font-medium">Загрузка...</p>
           <p className="text-[var(--tg-theme-hint-color)] text-sm mt-2">FinanceBot Mini App</p>
-          <div className="mt-4 w-32 h-1 bg-[var(--tg-theme-secondary-bg-color)] rounded-full mx-auto overflow-hidden">
-            <div className="h-full bg-[var(--tg-theme-button-color)] rounded-full animate-pulse" style={{ width: '60%' }}></div>
-          </div>
         </div>
       </div>
     );
@@ -54,7 +51,7 @@ export function Layout() {
       </div>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-[var(--tg-theme-bg-color)]/95 backdrop-blur-lg border-t border-[var(--lavender-200)]/50 z-30"
+      <nav className="fixed bottom-0 left-0 right-0 bg-[var(--tg-theme-bg-color)] border-t border-gray-200/50 dark:border-gray-700/50 z-30 backdrop-blur-lg"
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
         <div className="flex items-center justify-around h-16 max-w-lg mx-auto">
@@ -66,24 +63,13 @@ export function Layout() {
               className={({ isActive }) =>
                 `flex flex-col items-center justify-center flex-1 h-full transition-all duration-200 ${
                   isActive
-                    ? 'text-[var(--tg-theme-button-color)]'
-                    : 'text-[var(--tg-theme-hint-color)] hover:text-[var(--tg-theme-text-color)]'
+                    ? 'text-[var(--tg-theme-button-color)] scale-105'
+                    : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'
                 }`
               }
             >
-              {({ isActive }) => (
-                <>
-                  <div className={`text-xl mb-0.5 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`}>
-                    {item.icon}
-                  </div>
-                  <span className={`text-[10px] font-medium transition-all ${isActive ? 'font-semibold' : ''}`}>
-                    {item.label}
-                  </span>
-                  {isActive && (
-                    <div className="absolute bottom-2 w-1 h-1 rounded-full bg-[var(--tg-theme-button-color)]"></div>
-                  )}
-                </>
-              )}
+              <span className="text-xl mb-0.5">{item.icon}</span>
+              <span className="text-[10px] font-medium">{item.label}</span>
             </NavLink>
           ))}
         </div>

@@ -14,16 +14,16 @@ export function GoalCard({ goal, onAdd, onSpend }: GoalCardProps) {
     : 0;
 
   return (
-    <div className="p-4 rounded-2xl bg-[var(--tg-theme-secondary-bg-color)] border border-[var(--lavender-200)]/30">
+    <div className="p-4 rounded-2xl bg-[var(--tg-theme-secondary-bg-color,#f4f4f5)]">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-xl">{goal.icon}</span>
-          <span className="font-semibold text-[var(--tg-theme-text-color)]">
+          <span className="font-semibold text-[var(--tg-theme-text-color,#000)]">
             {goal.title}
           </span>
         </div>
         {goal.is_completed && (
-          <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+          <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
             🎉 Достигнута
           </span>
         )}
@@ -31,15 +31,15 @@ export function GoalCard({ goal, onAdd, onSpend }: GoalCardProps) {
 
       <ProgressBar
         value={percent}
-        color={goal.is_completed ? '#10B981' : '#9B87F5'}
+        color={goal.is_completed ? '#10B981' : undefined}
         height={10}
       />
 
       <div className="flex items-center justify-between mt-2">
-        <span className="text-sm text-[var(--tg-theme-hint-color)]">
+        <span className="text-sm text-gray-500">
           {formatCurrency(goal.current_amount)} / {formatCurrency(goal.target_amount)}
         </span>
-        <span className="text-sm font-medium" style={{ color: goal.is_completed ? '#10B981' : '#9B87F5' }}>
+        <span className="text-sm font-medium" style={{ color: goal.is_completed ? '#10B981' : '#6366F1' }}>
           {Math.min(100, Math.round(percent))}%
         </span>
       </div>
@@ -48,13 +48,13 @@ export function GoalCard({ goal, onAdd, onSpend }: GoalCardProps) {
         <div className="flex gap-2 mt-3">
           <button
             onClick={onAdd}
-            className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-green-400 to-green-500 text-white text-sm font-medium active:scale-95 transition-transform shadow-sm"
+            className="flex-1 py-2 px-3 rounded-xl bg-green-500 text-white text-sm font-medium active:scale-95 transition-transform"
           >
             + Отложить
           </button>
           <button
             onClick={onSpend}
-            className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-red-400 to-red-500 text-white text-sm font-medium active:scale-95 transition-transform shadow-sm"
+            className="flex-1 py-2 px-3 rounded-xl bg-red-500 text-white text-sm font-medium active:scale-95 transition-transform"
           >
             − Потратить
           </button>
