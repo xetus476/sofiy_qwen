@@ -14,13 +14,11 @@ export function Stats() {
   const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
   const [budgetInput, setBudgetInput] = useState('');
 
-  // Filter transactions for current month
   const monthTransactions = transactions.filter(t => {
     const date = new Date(t.date);
     return date.getMonth() + 1 === currentMonth && date.getFullYear() === currentYear;
   });
 
-  // Calculate expenses by category
   const expensesByCategory: Record<string, number> = {};
   monthTransactions.forEach(t => {
     if (t.type === 'expense') {
@@ -28,7 +26,6 @@ export function Stats() {
     }
   });
 
-  // Filter budgets for current month
   const monthBudgets = budgets.filter(b => b.month === currentMonth && b.year === currentYear);
   
   const totalPlanned = monthBudgets.reduce((sum, b) => sum + Number(b.planned_amount), 0);
@@ -81,16 +78,15 @@ export function Stats() {
 
   return (
     <div className="p-4 space-y-4">
-      {/* Header */}
       <h1 className="text-xl font-bold">📊 Статистика</h1>
 
       {/* Month Switcher */}
-      <div className="flex items-center justify-between bg-[var(--tg-theme-secondary-bg-color,#f4f4f5)] rounded-2xl p-3">
-        <button onClick={prevMonth} className="w-8 h-8 rounded-full bg-white dark:bg-gray-700 flex items-center justify-center active:scale-90 transition-transform shadow-sm text-sm">
+      <div className="flex items-center justify-between bg-[var(--lavender-100)] rounded-2xl p-3 border border-[var(--lavender-200)]/50">
+        <button onClick={prevMonth} className="w-8 h-8 rounded-full bg-white flex items-center justify-center active:scale-90 transition-transform shadow-sm text-sm">
           ←
         </button>
         <span className="font-semibold text-sm">{getMonthName(currentMonth)} {currentYear}</span>
-        <button onClick={nextMonth} className="w-8 h-8 rounded-full bg-white dark:bg-gray-700 flex items-center justify-center active:scale-90 transition-transform shadow-sm text-sm">
+        <button onClick={nextMonth} className="w-8 h-8 rounded-full bg-white flex items-center justify-center active:scale-90 transition-transform shadow-sm text-sm">
           →
         </button>
       </div>
@@ -106,7 +102,7 @@ export function Stats() {
           return (
             <div
               key={category.id}
-              className="p-3 rounded-xl bg-[var(--tg-theme-secondary-bg-color,#f4f4f5)]"
+              className="p-3 rounded-xl bg-[var(--tg-theme-secondary-bg-color)] border border-[var(--lavender-200)]/30"
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
@@ -114,13 +110,13 @@ export function Stats() {
                   <span className="text-sm font-medium">{category.name}</span>
                 </div>
                 {planned > 0 ? (
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-[var(--tg-theme-hint-color)]">
                     {formatCurrency(spent)} / {formatCurrency(planned)}
                   </span>
                 ) : (
                   <button
                     onClick={() => openBudgetSheet(category.id)}
-                    className="text-xs text-indigo-500 font-medium active:scale-95 transition-transform"
+                    className="text-xs text-[var(--tg-theme-button-color)] font-medium active:scale-95 transition-transform"
                   >
                     Установить лимит
                   </button>
@@ -130,7 +126,7 @@ export function Stats() {
                 <>
                   <ProgressBar value={percent} height={6} />
                   <div className="flex justify-between mt-1">
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-[var(--tg-theme-hint-color)]">
                       Потрачено {formatCurrency(spent)}
                     </span>
                     <span className="text-xs font-medium" style={{ color: percent < 70 ? '#10B981' : percent < 90 ? '#F59E0B' : '#EF4444' }}>
@@ -139,7 +135,7 @@ export function Stats() {
                   </div>
                 </>
               ) : (
-                <div className="text-xs text-gray-400">План не задан</div>
+                <div className="text-xs text-[var(--tg-theme-hint-color)]">План не задан</div>
               )}
             </div>
           );
@@ -148,24 +144,24 @@ export function Stats() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20">
-          <p className="text-xs text-blue-600 dark:text-blue-400">Осталось по бюджету</p>
-          <p className={`text-lg font-bold ${remaining >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+        <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30">
+          <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">Осталось по бюджету</p>
+          <p className={`text-lg font-bold ${remaining >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
             {formatCurrency(remaining)}
           </p>
         </div>
-        <div className="p-3 rounded-xl bg-purple-50 dark:bg-purple-900/20">
-          <p className="text-xs text-purple-600 dark:text-purple-400">Свободные деньги</p>
-          <p className={`text-lg font-bold ${freeMoney >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+        <div className="p-3 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/30">
+          <p className="text-xs text-purple-600 dark:text-purple-400 font-medium">Свободные деньги</p>
+          <p className={`text-lg font-bold ${freeMoney >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
             {formatCurrency(freeMoney)}
           </p>
         </div>
       </div>
 
       {/* Income */}
-      <div className="p-3 rounded-xl bg-green-50 dark:bg-green-900/20">
-        <p className="text-xs text-green-600 dark:text-green-400">Доход</p>
-        <p className="text-lg font-bold text-green-700 dark:text-green-300">
+      <div className="p-3 rounded-xl bg-[var(--lavender-100)] border border-[var(--lavender-200)]">
+        <p className="text-xs text-[var(--lavender-700)] font-medium">Доход</p>
+        <p className="text-lg font-bold text-[var(--lavender-900)]">
           {formatCurrency(user.monthly_income)}
         </p>
       </div>
@@ -178,20 +174,20 @@ export function Stats() {
       >
         <div className="space-y-4">
           <div>
-            <label className="text-sm text-gray-500 mb-1 block">Планируемая сумма на месяц</label>
+            <label className="text-sm text-[var(--tg-theme-hint-color)] mb-1 block">Планируемая сумма на месяц</label>
             <input
               type="number"
               value={budgetInput}
               onChange={(e) => setBudgetInput(e.target.value)}
               placeholder="0 ₽"
-              className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-lg font-medium outline-none focus:ring-2 focus:ring-indigo-500 text-[var(--tg-theme-text-color,#000)]"
+              className="w-full px-4 py-3 rounded-xl bg-[var(--lavender-100)] text-lg font-medium outline-none focus:ring-2 focus:ring-[var(--tg-theme-button-color)] text-[var(--tg-theme-text-color)]"
               inputMode="numeric"
               autoFocus
             />
           </div>
           <button
             onClick={handleSetBudget}
-            className="w-full py-3 rounded-xl bg-[var(--tg-theme-button-color,#3390ec)] text-white font-medium active:scale-[0.98] transition-transform"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--tg-theme-button-color)] to-[var(--lavender-400)] text-white font-medium active:scale-[0.98] transition-transform lavender-shadow"
           >
             Сохранить лимит
           </button>
