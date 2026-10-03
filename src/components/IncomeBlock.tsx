@@ -3,9 +3,10 @@ import { formatCurrency } from '../lib/utils';
 interface IncomeBlockProps {
   income: number;
   onEdit: () => void;
+  onAdd: () => void;
 }
 
-export function IncomeBlock({ income, onEdit }: IncomeBlockProps) {
+export function IncomeBlock({ income, onEdit, onAdd }: IncomeBlockProps) {
   return (
     <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
       <div className="flex items-center justify-between">
@@ -17,12 +18,22 @@ export function IncomeBlock({ income, onEdit }: IncomeBlockProps) {
             <p className="text-sm mt-1 opacity-90">Укажите вашу ЗП за месяц</p>
           )}
         </div>
-        <button
-          onClick={onEdit}
-          className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center active:scale-90 transition-transform"
-        >
-          <span className="text-lg">✏️</span>
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={onAdd}
+            className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center active:scale-90 transition-transform"
+            title="Увеличить зарплату"
+          >
+            <span className="text-lg">➕</span>
+          </button>
+          <button
+            onClick={onEdit}
+            className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center active:scale-90 transition-transform"
+            title="Редактировать зарплату"
+          >
+            <span className="text-lg">✏️</span>
+          </button>
+        </div>
       </div>
     </div>
   );

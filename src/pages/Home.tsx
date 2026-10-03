@@ -10,10 +10,12 @@ export function Home() {
   const { user, categories, transactions, updateIncome, addTransaction, createGoal } = useAppContext();
 
   const [showIncomeSheet, setShowIncomeSheet] = useState(false);
+  const [showAddIncomeSheet, setShowAddIncomeSheet] = useState(false);
   const [showExpenseSheet, setShowExpenseSheet] = useState(false);
   const [showGoalSheet, setShowGoalSheet] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [incomeInput, setIncomeInput] = useState('');
+  const [addIncomeInput, setAddIncomeInput] = useState('');
   const [expenseInput, setExpenseInput] = useState('');
   const [expenseNote, setExpenseNote] = useState('');
   const [goalTitle, setGoalTitle] = useState('');
@@ -44,6 +46,16 @@ export function Home() {
     hapticSuccess();
     setShowIncomeSheet(false);
     setIncomeInput('');
+  };
+
+  const handleAddIncome = () => {
+    const amount = parseFloat(addIncomeInput);
+    if (isNaN(amount) || amount <= 0) return;
+    const newIncome = (user.monthly_income || 0) + amount;
+    updateIncome(newIncome);
+    hapticSuccess();
+    setShowAddIncomeSheet(false);
+    setAddIncomeInput('');
   };
 
   const handleAddExpense = () => {
@@ -92,6 +104,11 @@ export function Home() {
         onEdit={() => {
           setIncomeInput(user.monthly_income.toString());
           setShowIncomeSheet(true);
+        }}
+        onAdd={() => {
+          setAddIncomeInput('');
+          setShowAddIncomeSheet(true);
+          hapticLight();
         }}
       />
 
@@ -156,6 +173,48 @@ export function Home() {
             className="w-full py-3 rounded-xl bg-[var(--tg-theme-button-color,#3390ec)] text-white font-medium active:scale-[0.98] transition-transform"
           >
             Сохранить
+          </button>
+        </div>
+      </BottomSheet>
+
+      {/* Add Income Bottom Sheet */}
+      <BottomSheet
+        isOpen={showAddIncomeSheet}
+        onClose={() => setShowAddIncomeSheet(false)}
+        title="💵 Увеличить зарплату"
+      >
+        <div className="space-y-4">
+          <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-900/20">
+            <p className="text-xs text-indigo-600 dark:text-indigo-400">Текущая зарплата</p>
+            <p className="text-lg font-bold text-indigo-700 dark:text-indigo-300">
+              {formatCurrency(user.monthly_income || 0)}
+            </p>
+          </div>
+          <div>
+            <label className="text-sm text-gray-500 mb-1 block">На какую сумму увеличить</label>
+            <input
+              type="number"
+              value={addIncomeInput}
+              onChange={(e) => setAddIncomeInput(e.target.value)}
+              placeholder="0 ₽"
+              className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-lg font-medium outline-none focus:ring-2 focus:ring-green-500 text-[var(--tg-theme-text-color,#000)]"
+              inputMode="numeric"
+              autoFocus
+            />
+          </div>
+          {addIncomeInput && !isNaN(parseFloat(addIncomeInput)) && (
+            <div className="p-3 rounded-xl bg-green-50 dark:bg-green-900/20">
+              <p className="text-xs text-green-600 dark:text-green-400">Новая зарплата</p>
+              <p className="text-lg font-bold text-green-700 dark:text-green-300">
+                {formatCurrency((user.monthly_income || 0) + parseFloat(addIncomeInput))}
+              </p>
+            </div>
+          )}
+          <button
+            onClick={handleAddIncome}
+            className="w-full py-3 rounded-xl bg-green-500 text-white font-medium active:scale-[0.98] transition-transform"
+          >
+            ➕ Увеличить зарплату
           </button>
         </div>
       </BottomSheet>
